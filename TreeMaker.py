@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from treelib import Node, Tree
 from math import log2
+from collections import defaultdict
 
 usage = 'TreeMaker.py /path/to/training/dataset /path/to/validation/dataset /path/to/testing/dataset pruning_factor'
 
@@ -28,33 +29,61 @@ header = list(training_set.columns.values)
 print(header)
 
 num_tuples = len(training_set[header[-1]])
-num_class = {}
+num_label = {}
 
 
 for val in training_set[header[-1]]:
-    if val in num_class:
-        num_class[val] += 1
+    if val in num_label:
+        num_label[val] += 1
     else:
-        num_class[val] = 1
+        num_label[val] = 1
 
-probability_class = {}
-for key in num_class:
-    probability_class[key] = num_class[key] / num_tuples
+probability_label = {}
+for key in num_label:
+    probability_label[key] = num_label[key] / num_tuples
 
 previous_entropy = 0
-for key in probability_class:
-    previous_entropy += -1 * probability_class[key] * log2(probability_class[key])
+for key in probability_label:
+    previous_entropy += -1 * probability_label[key] * log2(probability_label[key])
 print(previous_entropy)
+
+
+class NodeData:
+    def __init__(self, entropy, header):
+        self.entropy = entropy
+        self.header = header
+
+tree = Tree()
+
+tree.create_node('Root', 'root', data = NodeData(previous_entropy, None))
+
+def make_branch(set, headers, tree, parent_node):
+    #base cases: out of header OR labeles are pure
+    for dim in headers[0:-1]: #TODO: 0:-2?
+        value_label_counts = getValueLabelCounts(set, dim)
+        header_entropy = 0
+        for value, label_count in value_label_counts:
+            header_entropy += calcEntropy(label_count)
+        pass
+
+def calcEntropy(label_count):
+    entropy = 0
+    for label in label_count:
+
+
+
+def getValueLabelCounts(set, header):
+    label_counts = defaultdict(defaultdict(lambda: 0))
+    #get count of instances for each label
+    for tuple in set.itertuples():
+        label_counts[tuple[header]][getLabel(tuple)] += 1
+    return label_counts
+
+def getLabel(tuple):
+    return tuple[-1]
+
+testEntropy(training_set, 'XB')
 
 # print(training_set)
 
 
-
-tree = Tree()
-
-tree.create_node('Root', 'root')
-tree.create_node('A', 'a', parent='root')
-tree.create_node('B', 'b', parent='root')
-tree.create_node('C', 'c', parent='root')
-
-# tree.show(line_type="ascii-em")
