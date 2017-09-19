@@ -68,9 +68,12 @@ def make_branch(set, headers, tree, parent_node):
 
 def calcEntropy(label_count):
     entropy = 0
-    for label in label_count:
-
-
+    total_instances = 0
+    for label, count in label_count:
+        total_instances += count
+    for label, count in label_count:
+        entropy += -1 * count / total_instances * log2(count / total_instances)
+    return entropy
 
 def getValueLabelCounts(set, header):
     label_counts = defaultdict(defaultdict(lambda: 0))
