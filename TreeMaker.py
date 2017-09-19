@@ -23,7 +23,11 @@ training_set = pd.read_csv(training_data_path)
 validation_set = pd.read_csv(validation_data_path)
 test_set = pd.read_csv(test_data_path)
 
-print(training_set)
+header = list(training_set.columns.values)
+print(header)
+
+
+# print(training_set)
 
 
 
@@ -34,4 +38,4 @@ tree.create_node('A', 'a', parent='root')
 tree.create_node('B', 'b', parent='root')
 tree.create_node('C', 'c', parent='root')
 
-tree.show(line_type="ascii-em")
+# tree.show(line_type="ascii-em")
