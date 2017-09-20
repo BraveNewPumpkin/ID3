@@ -67,11 +67,11 @@ def calcInfoGain(set, dim, previous_entropy):
     value_label_counts = getValueLabelCounts(set, dim)
     num_rows_total = set.shape[0]
 
-    for value, label_counts in value_label_counts:
+    for value, label_counts in value_label_counts.items():
         num_rows_for_value = calcNumInstances(label_counts)
         weight_factor = num_rows_for_value / num_rows_total
         dim_entropy += calcEntropy(label_counts, num_rows_for_value) * weight_factor
-    return dim_entropy
+    return previous_entropy - dim_entropy
 
 def calcNumInstances(label_counts):
     total_instances = 0
@@ -98,5 +98,43 @@ def getValueLabelCounts(set, header):
 def getLabel(row):
     return row[-1]
 
-
-
+i = 0
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+i += 1
+print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
