@@ -59,8 +59,18 @@ tree.create_node('Root', 'root', data = NodeData(previous_entropy, None))
 
 def make_branch(set, headers, tree, parent_node):
     #base cases: out of header OR labeles are pure
+    max_info_gain = -1
+    max_info_gain_dim = None
     for dim in headers[0:-1]:
-        calcInfoGain(set, dim, parent_node.data.previous_entropy)
+        info_gain = calcInfoGain(set, dim, parent_node.data.previous_entropy)
+        if info_gain > max_info_gain:
+            max_info_gain = info_gain
+            max_info_gain_dim = dim
+    print('max info gain is from dimension: "%s" and is: "%d"' % (max_info_gain_dim, max_info_gain))
+    #TODO add children
+    #TODO create new set without dim column and ?rows?
+    #TODO check for base cases
+    #TODO recurse
 
 def calcInfoGain(set, dim, previous_entropy):
     dim_entropy = 0
@@ -98,5 +108,6 @@ def getValueLabelCounts(set, header):
 def getLabel(row):
     return row[-1]
 
+#TODO remove
 for dim in header[0:-1]:
     print('info gain for %s: %s' % (dim, calcInfoGain(training_set, dim, previous_entropy)))
