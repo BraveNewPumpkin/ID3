@@ -31,7 +31,7 @@ header = list(training_set.columns.values)
 num_tuples = len(training_set[header[-1]])
 num_label = {}
 
-
+#find initial entropy
 for val in training_set[header[-1]]:
     if val in num_label:
         num_label[val] += 1
@@ -60,37 +60,42 @@ tree.create_node('Root', 'root', data = NodeData(previous_entropy, None))
 def make_branch(set, headers, tree, parent_node):
     #base cases: out of header OR labeles are pure
     for dim in headers[0:-1]: #TODO: 0:-2?
-        value_label_counts = getValueLabelCounts(set, dim)
-        header_entropy = 0
-        for value, label_count in value_label_counts:
-            header_entropy += calcEntropy(label_count) #TODO *weight_factor
-        pass
+        calcInfoGain(set, dim, parent_node.data.previous_entropy)
 
-def calcEntropy(label_count):
-    entropy = 0
+def calcInfoGain(set, dim, previous_entropy):
+    dim_entropy = 0
+    value_label_counts = getValueLabelCounts(set, dim)
+
+    for value, label_counts in value_label_counts:
+        num_instances = calcNumInstances(label_counts)
+        weight_factor = num_instances / set.shape[0]
+        dim_entropy += calcEntropy(label_counts, num_instances) * weight_factor
+    return dim_entropy
+
+def calcNumInstances(label_counts):
     total_instances = 0
-    for label, count in label_count.items():
+    for label, count in label_counts.items():
         total_instances += count
+    return total_instances
+
+
+def calcEntropy(label_count, total_instances):
+    entropy = 0
     for label, count in label_count.items():
         entropy += -1 * count / total_instances * log2(count / total_instances)
     return entropy
 
 def getValueLabelCounts(set, header):
-    label_counts = defaultdict(lambda: defaultdict(lambda: 0))
+    value_label_counts = defaultdict(lambda: defaultdict(lambda: 0))
     #get count of instances for each label
-    for tuple in set.itertuples(index=True):
-        value = getattr(tuple, header)
-        label = getLabel(tuple)
-        label_counts[value][label] += 1
-    return label_counts
+    for row in set.itertuples():
+        value = getattr(row, header)
+        label = getLabel(row)
+        value_label_counts[value][label] += 1
+    return value_label_counts
 
-def getLabel(tuple):
-    return tuple[-1]
+def getLabel(row):
+    return row[-1]
 
-
-value_label_counts = getValueLabelCounts(training_set, 'XB')
-print(calcEntropy(value_label_counts[0]))
-
-# print(training_set)
 
 
