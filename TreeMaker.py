@@ -59,7 +59,7 @@ tree.create_node('Root', 'root', data = NodeData(previous_entropy, None))
 
 def make_branch(set, headers, tree, parent_node):
     #base cases: out of header OR labeles are pure
-    for dim in headers[0:-1]: #TODO: 0:-2?
+    for dim in headers[0:-1]:
         calcInfoGain(set, dim, parent_node.data.previous_entropy)
 
 def calcInfoGain(set, dim, previous_entropy):
@@ -98,43 +98,5 @@ def getValueLabelCounts(set, header):
 def getLabel(row):
     return row[-1]
 
-i = 0
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
-i += 1
-print('info gain for %s: %s' % (header[i],calcInfoGain(training_set,header[i],previous_entropy)))
+for dim in header[0:-1]:
+    print('info gain for %s: %s' % (dim, calcInfoGain(training_set, dim, previous_entropy)))
