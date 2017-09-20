@@ -67,9 +67,10 @@ def calcInfoGain(set, dim, previous_entropy):
     value_label_counts = getValueLabelCounts(set, dim)
 
     for value, label_counts in value_label_counts:
-        num_instances = calcNumInstances(label_counts)
-        weight_factor = num_instances / set.shape[0]
-        dim_entropy += calcEntropy(label_counts, num_instances) * weight_factor
+        num_rows_for_value = calcNumInstances(label_counts)
+        num_rows_total = set.shape[0]
+        weight_factor = num_rows_for_value / num_rows_total
+        dim_entropy += calcEntropy(label_counts, num_rows_for_value) * weight_factor
     return dim_entropy
 
 def calcNumInstances(label_counts):
