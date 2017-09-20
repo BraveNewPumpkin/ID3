@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+import pprint as pp
 from pathlib import Path
 from treelib import Node, Tree
 from math import log2
@@ -26,7 +27,6 @@ validation_set = pd.read_csv(validation_data_path)
 test_set = pd.read_csv(test_data_path)
 
 header = list(training_set.columns.values)
-print(header)
 
 num_tuples = len(training_set[header[-1]])
 num_label = {}
@@ -63,29 +63,33 @@ def make_branch(set, headers, tree, parent_node):
         value_label_counts = getValueLabelCounts(set, dim)
         header_entropy = 0
         for value, label_count in value_label_counts:
-            header_entropy += calcEntropy(label_count)
+            header_entropy += calcEntropy(label_count) #TODO *weight_factor
         pass
 
 def calcEntropy(label_count):
     entropy = 0
     total_instances = 0
-    for label, count in label_count:
+    for label, count in label_count.items():
         total_instances += count
-    for label, count in label_count:
+    for label, count in label_count.items():
         entropy += -1 * count / total_instances * log2(count / total_instances)
     return entropy
 
 def getValueLabelCounts(set, header):
-    label_counts = defaultdict(defaultdict(lambda: 0))
+    label_counts = defaultdict(lambda: defaultdict(lambda: 0))
     #get count of instances for each label
-    for tuple in set.itertuples():
-        label_counts[tuple[header]][getLabel(tuple)] += 1
+    for tuple in set.itertuples(index=True):
+        value = getattr(tuple, header)
+        label = getLabel(tuple)
+        label_counts[value][label] += 1
     return label_counts
 
 def getLabel(tuple):
     return tuple[-1]
 
-testEntropy(training_set, 'XB')
+
+value_label_counts = getValueLabelCounts(training_set, 'XB')
+print(calcEntropy(value_label_counts[0]))
 
 # print(training_set)
 
