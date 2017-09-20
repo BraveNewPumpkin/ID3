@@ -65,10 +65,10 @@ def make_branch(set, headers, tree, parent_node):
 def calcInfoGain(set, dim, previous_entropy):
     dim_entropy = 0
     value_label_counts = getValueLabelCounts(set, dim)
+    num_rows_total = set.shape[0]
 
     for value, label_counts in value_label_counts:
         num_rows_for_value = calcNumInstances(label_counts)
-        num_rows_total = set.shape[0]
         weight_factor = num_rows_for_value / num_rows_total
         dim_entropy += calcEntropy(label_counts, num_rows_for_value) * weight_factor
     return dim_entropy
