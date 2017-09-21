@@ -90,7 +90,7 @@ def chooseDecisionDim(set, dims, previous_entropy):
     max_info_gain = -1
     max_info_gain_dim = None
     max_info_value_label_counts = None
-    for dim in headers[0:-1]:
+    for dim in dims[0:-1]:
         value_label_counts = getValueLabelCounts(set, dim)
         info_gain = calcInfoGain(set, dim, previous_entropy, value_label_counts)
         if info_gain > max_info_gain:
