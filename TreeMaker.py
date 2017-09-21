@@ -61,7 +61,7 @@ def make_branch(set, dims, tree, parent_node):
     if checkIfPure(set, dims) or len(dims) == 0:
         return True
     status = True
-    chosen_dim, entropy, value_label_counts = chooseDecisionDim(set, dims, parent_node.data.entropy)
+    chosen_dim, info_gain, value_label_counts = chooseDecisionDim(set, dims, parent_node.data.entropy)
     #mutate original headers (dimensions) data structure as we will be passing references to children
     dims.remove(chosen_dim)
     #remove the dimension from the dataset
@@ -71,12 +71,14 @@ def make_branch(set, dims, tree, parent_node):
     #set the decision made in tag on parent node
     parent_node.tag = chosen_dim
     #add children
-    for value in value_label_counts.keys():
+    for value, label_counts in value_label_counts.items():
         subset = set.copy()
         #remove rows from subset which don't match current value for newest decision
         subset.drop(subset[subset[chosen_dim] != value].index, inplace=True)
-        identifier = ''.join([chosen_dim, '=', str(value)])
-        new_node = tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=entropy))
+        value_entropy = calcEntropy(label_counts, calcNumInstances(label_counts))
+        identifier = ''.join([parent_node.identifier, '^', chosen_dim, '=', str(value)])
+        print('recursing to node %s with an entropy of %f' % (identifier, value_entropy))
+        new_node = tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=value_entropy))
         #RECURSE
         status = status and make_branch(subset, dims, tree, new_node)
     return status
