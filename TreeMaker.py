@@ -49,44 +49,50 @@ print(previous_entropy)
 
 
 class NodeData:
-    def __init__(self, entropy, header):
+    def __init__(self, entropy):
         self.entropy = entropy
-        self.header = header
 
 tree = Tree()
 
-tree.create_node('Root', 'root', data=NodeData(previous_entropy, None))
-tree.create_node('0', 'XA', parent='root', data=NodeData(.9, None))
-tree.create_node('1', 'XB', parent='root', data=NodeData(.1, None))
-tree.show()
+tree.create_node('Root', 'root', data=NodeData(previous_entropy))
 
 def make_branch(set, dims, tree, parent_node):
     #base cases: out of header OR labeles are pure
-    chosen_dim = chooseDecisionDim(set, dims, parent_node.data.entropy)
+    chosen_dim, entropy, value_label_counts = chooseDecisionDim(set, dims, parent_node.data.entropy)
     #mutate original headers (dimensions) data structure as we will be passing references to children
     dims.remove(chosen_dim)
+    #remove the dimension from the dataset
+    set.drop(chosen_dim, 1, inplace=True) #1 is for columns axis
 
-    #TODO add children
-    #TODO create new set without dim column and ?rows?
+    #TODO remove rows from set which don't match decion tree down branch to current location including newest decision
+
+    #set the decision made in tag on parent node
+    parent_node.tag = chosen_dim;
+    #add children
+    for value in value_label_counts.keys():
+        pp.pprint(value)
+        identifier = ''.join([chosen_dim, '=', str(value)])
+        tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=entropy))
     #TODO check for base cases
     #TODO recurse
 
 def chooseDecisionDim(set, dims, previous_entropy):
     max_info_gain = -1
     max_info_gain_dim = None
+    max_info_value_label_counts = None
     for dim in headers[0:-1]:
-        info_gain = calcInfoGain(set, dim, previous_entropy)
+        value_label_counts = getValueLabelCounts(set, dim)
+        info_gain = calcInfoGain(set, dim, previous_entropy, value_label_counts)
         if info_gain > max_info_gain:
             max_info_gain = info_gain
             max_info_gain_dim = dim
+            max_info_value_label_counts = value_label_counts
     print('max info gain is from dimension: "%s" and is: "%d"' % (max_info_gain_dim, max_info_gain))
-    return max_info_gain_dim
+    return max_info_gain_dim, max_info_gain, max_info_value_label_counts
 
-def calcInfoGain(set, dim, previous_entropy):
+def calcInfoGain(set, dim, previous_entropy, value_label_counts):
     dim_entropy = 0
-    value_label_counts = getValueLabelCounts(set, dim)
     num_rows_total = set.shape[0]
-
     for value, label_counts in value_label_counts.items():
         num_rows_for_value = calcNumInstances(label_counts)
         weight_factor = num_rows_for_value / num_rows_total
