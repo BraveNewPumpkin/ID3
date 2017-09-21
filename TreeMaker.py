@@ -57,7 +57,6 @@ tree = Tree()
 tree.create_node('Root', 'root', data=NodeData(previous_entropy))
 
 def make_branch(set, dims, tree, parent_node):
-    #base cases: out of header OR labeles are pure
     chosen_dim, entropy, value_label_counts = chooseDecisionDim(set, dims, parent_node.data.entropy)
     #mutate original headers (dimensions) data structure as we will be passing references to children
     dims.remove(chosen_dim)
@@ -73,8 +72,20 @@ def make_branch(set, dims, tree, parent_node):
         pp.pprint(value)
         identifier = ''.join([chosen_dim, '=', str(value)])
         tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=entropy))
-    #TODO check for base cases
+    #base cases: out of header OR labels are pure
+    if checkIfPure(set) or len(dims) == 0:
+       return True
+
+
     #TODO recurse
+
+def checkIfPure(set):
+    previous_label = getLabel(set.loc[0, :])
+    for row in set.itertuples():
+        if previous_label != getLabel(row):
+            return False
+    return True
+
 
 def chooseDecisionDim(set, dims, previous_entropy):
     max_info_gain = -1
@@ -87,7 +98,7 @@ def chooseDecisionDim(set, dims, previous_entropy):
             max_info_gain = info_gain
             max_info_gain_dim = dim
             max_info_value_label_counts = value_label_counts
-    print('max info gain is from dimension: "%s" and is: "%d"' % (max_info_gain_dim, max_info_gain))
+    print('max info gain is from dimension: "%s" and is: "%f"' % (max_info_gain_dim, max_info_gain))
     return max_info_gain_dim, max_info_gain, max_info_value_label_counts
 
 def calcInfoGain(set, dim, previous_entropy, value_label_counts):
