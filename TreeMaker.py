@@ -26,13 +26,13 @@ training_set = pd.read_csv(training_data_path)
 validation_set = pd.read_csv(validation_data_path)
 test_set = pd.read_csv(test_data_path)
 
-header = list(training_set.columns.values)
+headers = list(training_set.columns.values)
 
-num_tuples = len(training_set[header[-1]])
+num_tuples = len(training_set[headers[-1]])
 num_label = {}
 
 #find initial entropy
-for val in training_set[header[-1]]:
+for val in training_set[headers[-1]]:
     if val in num_label:
         num_label[val] += 1
     else:
@@ -55,22 +55,32 @@ class NodeData:
 
 tree = Tree()
 
-tree.create_node('Root', 'root', data = NodeData(previous_entropy, None))
+tree.create_node('Root', 'root', data=NodeData(previous_entropy, None))
+tree.create_node('0', 'XA', parent='root', data=NodeData(.9, None))
+tree.create_node('1', 'XB', parent='root', data=NodeData(.1, None))
+tree.show()
 
-def make_branch(set, headers, tree, parent_node):
+def make_branch(set, dims, tree, parent_node):
     #base cases: out of header OR labeles are pure
-    max_info_gain = -1
-    max_info_gain_dim = None
-    for dim in headers[0:-1]:
-        info_gain = calcInfoGain(set, dim, parent_node.data.previous_entropy)
-        if info_gain > max_info_gain:
-            max_info_gain = info_gain
-            max_info_gain_dim = dim
-    print('max info gain is from dimension: "%s" and is: "%d"' % (max_info_gain_dim, max_info_gain))
+    chosen_dim = chooseDecisionDim(set, dims, parent_node.data.entropy)
+    #mutate original headers (dimensions) data structure as we will be passing references to children
+    dims.remove(chosen_dim)
+
     #TODO add children
     #TODO create new set without dim column and ?rows?
     #TODO check for base cases
     #TODO recurse
+
+def chooseDecisionDim(set, dims, previous_entropy):
+    max_info_gain = -1
+    max_info_gain_dim = None
+    for dim in headers[0:-1]:
+        info_gain = calcInfoGain(set, dim, previous_entropy)
+        if info_gain > max_info_gain:
+            max_info_gain = info_gain
+            max_info_gain_dim = dim
+    print('max info gain is from dimension: "%s" and is: "%d"' % (max_info_gain_dim, max_info_gain))
+    return max_info_gain_dim
 
 def calcInfoGain(set, dim, previous_entropy):
     dim_entropy = 0
@@ -108,6 +118,10 @@ def getValueLabelCounts(set, header):
 def getLabel(row):
     return row[-1]
 
+
+make_branch(training_set, headers, tree, tree.get_node('root'))
+
+
 #TODO remove
-for dim in header[0:-1]:
-    print('info gain for %s: %s' % (dim, calcInfoGain(training_set, dim, previous_entropy)))
+#for dim in header[0:-1]:
+#    print('info gain for %s: %s' % (dim, calcInfoGain(training_set, dim, previous_entropy)))
