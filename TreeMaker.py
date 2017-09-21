@@ -74,7 +74,7 @@ def make_branch(set, dims, tree, parent_node):
     for value in value_label_counts.keys():
         subset = set.copy()
         #remove rows from subset which don't match current value for newest decision
-        subset.drop(subset[subset[chosen_dim] == value].index, inplace=True)
+        subset.drop(subset[subset[chosen_dim] != value].index, inplace=True)
         identifier = ''.join([chosen_dim, '=', str(value)])
         new_node = tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=entropy))
         #RECURSE
@@ -82,7 +82,7 @@ def make_branch(set, dims, tree, parent_node):
     return status
 
 def checkIfPure(set, dims):
-    return len(set[dims[-1]].unique()) == 1
+    return len(set[dims[-1]].unique()) < 2
 
 def chooseDecisionDim(set, dims, previous_entropy):
     max_info_gain = -1
