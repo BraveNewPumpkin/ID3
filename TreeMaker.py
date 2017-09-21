@@ -57,27 +57,29 @@ tree = Tree()
 tree.create_node('Root', 'root', data=NodeData(previous_entropy))
 
 def make_branch(set, dims, tree, parent_node):
+    #base cases: out of header OR labels are pure
+    if checkIfPure(set) or len(dims) == 0:
+        return True
+    status = True
     chosen_dim, entropy, value_label_counts = chooseDecisionDim(set, dims, parent_node.data.entropy)
     #mutate original headers (dimensions) data structure as we will be passing references to children
     dims.remove(chosen_dim)
     #remove the dimension from the dataset
     set.drop(chosen_dim, 1, inplace=True) #1 is for columns axis
 
-    #TODO remove rows from set which don't match decion tree down branch to current location including newest decision
 
     #set the decision made in tag on parent node
     parent_node.tag = chosen_dim;
     #add children
     for value in value_label_counts.keys():
+        #TODO remove rows from set which don't match decion tree down branch to current location including newest decision
+        subset = set.copy()
         pp.pprint(value)
         identifier = ''.join([chosen_dim, '=', str(value)])
-        tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=entropy))
-    #base cases: out of header OR labels are pure
-    if checkIfPure(set) or len(dims) == 0:
-       return True
-
-
-    #TODO recurse
+        new_node = tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=entropy))
+        #RECURSE
+        status = status and make_branch(subset, dims, tree, new_node)
+    return status
 
 def checkIfPure(set):
     previous_label = getLabel(set.loc[0, :])
