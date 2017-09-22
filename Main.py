@@ -36,7 +36,10 @@ def main(argv):
     print('Total number of nodes in the tree = %d' % tree.size())
     print('Number of leaf nodes in the tree = %d' % len(tree.leaves()))
     print('Max depth of tree = %d' % tree.depth())
-#Accuracy	of	the	model	on	the	training	dataset	=	81.2%
+
+    training_set_accuracy = calcAccuracyForData(training_set, headers)
+
+    print('Accuracy of the model on the training dataset = %.2f%%' % training_set_accuracy)
 
     return 0
 
@@ -62,6 +65,10 @@ def calcStartingEntropy(set, dims):
     print('starting entropy of data: %f' % starting_entropy)
     return starting_entropy
 
+def calcAccuracyForData(set, dims):
+    accuracy = 0.0
+    #TODO calculate accuracy
+    return accuracy
 
 main(sys.argv)
 
