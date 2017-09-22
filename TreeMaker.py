@@ -1,64 +1,42 @@
-import pandas as pd
-import sys
-import pprint as pp
-from pathlib import Path
+from collections import defaultdict
 from treelib import Node, Tree
 from math import log2
-from collections import defaultdict
-
-usage = 'TreeMaker.py /path/to/training/dataset /path/to/validation/dataset /path/to/testing/dataset pruning_factor'
-
-if len(sys.argv) < 5:
-    print('not enough arguments\n')
-    print(usage)
-    sys.exit(1)
-if len(sys.argv) > 5:
-    print('too many arguments\n')
-    print(usage)
-    sys.exit(1)
-
-training_data_path = Path(sys.argv[1])
-validation_data_path = Path(sys.argv[2])
-test_data_path = Path(sys.argv[3])
-pruning_factor = sys.argv[4]
-
-training_set = pd.read_csv(training_data_path)
-validation_set = pd.read_csv(validation_data_path)
-test_set = pd.read_csv(test_data_path)
-
-headers = list(training_set.columns.values)
-
-num_tuples = len(training_set[headers[-1]])
-num_label = {}
-
-#find initial entropy
-for val in training_set[headers[-1]]:
-    if val in num_label:
-        num_label[val] += 1
-    else:
-        num_label[val] = 1
-
-probability_label = {}
-for key in num_label:
-    probability_label[key] = num_label[key] / num_tuples
-
-previous_entropy = 0
-for key in probability_label:
-    previous_entropy += -1 * probability_label[key] * log2(probability_label[key])
-print(previous_entropy)
-
 
 class NodeData:
     def __init__(self, entropy):
         self.entropy = entropy
 
-tree = Tree()
+def makeTree(set, dims):
+    tree = Tree()
+    starting_entropy = calcStartingEntropy(set, dims)
+    root_node = tree.create_node('Root', 'root', data=NodeData(starting_entropy))
+    makeBranch(set, dims, tree, root_node)
+    return tree
 
-tree.create_node('Root', 'root', data=NodeData(previous_entropy))
+def calcStartingEntropy(set, dims):
+    starting_entropy = 0
+    num_rows = len(set[dims[-1]])
+    num_label = {}
 
-def make_branch(set, dims, tree, parent_node):
+    #find initial entropy
+    for val in set[dims[-1]]:
+        if val in num_label:
+            num_label[val] += 1
+        else:
+            num_label[val] = 1
+
+    probability_label = {}
+    for key in num_label:
+        probability_label[key] = num_label[key] / num_rows
+
+    for key in probability_label:
+        starting_entropy += -1 * probability_label[key] * log2(probability_label[key])
+    print('starting entropy of data: %f' % starting_entropy)
+    return starting_entropy
+
+def makeBranch(set, dims, tree, parent_node):
     #base cases: out of header OR labels are pure
-    if checkIfPure(set, dims) or len(dims) == 0:
+    if checkIfPure(set, dims) or len(dims) == 1: #is 1 instead of 0 because "Class" will be in there
         return True
     status = True
     chosen_dim, info_gain, value_label_counts, value_entropies = chooseDecisionDim(set, dims, parent_node.data.entropy)
@@ -80,7 +58,7 @@ def make_branch(set, dims, tree, parent_node):
         print('recursing to node %s with an entropy of %f' % (identifier, value_entropy))
         new_node = tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=value_entropy))
         #RECURSE
-        status = status and make_branch(subset, dims, tree, new_node)
+        status = status and makeBranch(subset, dims, tree, new_node)
     return status
 
 def checkIfPure(set, dims):
@@ -102,7 +80,7 @@ def chooseDecisionDim(set, dims, previous_entropy):
     print('max info gain is from dimension: "%s" and is: "%f"' % (max_info_gain_dim, max_info_gain))
     return max_info_gain_dim, max_info_gain, max_info_value_label_counts, max_info_value_entropies
 
-def calcInfoGain(set, dim, previous_entropy, value_label_counts):
+def calcInfoGain(set, dims, previous_entropy, value_label_counts):
     dim_entropy = 0
     value_entropies = {}
     num_rows_total = set.shape[0]
@@ -139,7 +117,6 @@ def getLabel(row):
     return row[-1]
 
 
-make_branch(training_set, headers, tree, tree.get_node('root'))
 
 
 #TODO remove
