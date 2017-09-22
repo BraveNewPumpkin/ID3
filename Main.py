@@ -28,14 +28,22 @@ def main(argv):
 
     headers = list(training_set.columns.values)
 
+    print('Number of training attributes = %d' % len(headers))
     starting_entropy = calcStartingEntropy(training_set, headers)
 
     tree = tm.makeTree(training_set, headers, starting_entropy)
+
+    print('Total number of nodes in the tree = %d' % tree.size())
+    print('Number of leaf nodes in the tree = %d' % len(tree.leaves()))
+    print('Max depth of tree = %d' % tree.depth())
+#Accuracy	of	the	model	on	the	training	dataset	=	81.2%
+
     return 0
 
 def calcStartingEntropy(set, dims):
     starting_entropy = 0
     num_rows = len(set[dims[-1]])
+    print('Number of training instances = %d' % num_rows)
     num_label = {}
 
     #find initial entropy
