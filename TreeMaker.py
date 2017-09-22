@@ -6,33 +6,12 @@ class NodeData:
     def __init__(self, entropy):
         self.entropy = entropy
 
-def makeTree(set, dims):
+def makeTree(set, dims, starting_entropy):
     tree = Tree()
-    starting_entropy = calcStartingEntropy(set, dims)
     root_node = tree.create_node('Root', 'root', data=NodeData(starting_entropy))
     makeBranch(set, dims, tree, root_node)
     return tree
 
-def calcStartingEntropy(set, dims):
-    starting_entropy = 0
-    num_rows = len(set[dims[-1]])
-    num_label = {}
-
-    #find initial entropy
-    for val in set[dims[-1]]:
-        if val in num_label:
-            num_label[val] += 1
-        else:
-            num_label[val] = 1
-
-    probability_label = {}
-    for key in num_label:
-        probability_label[key] = num_label[key] / num_rows
-
-    for key in probability_label:
-        starting_entropy += -1 * probability_label[key] * log2(probability_label[key])
-    print('starting entropy of data: %f' % starting_entropy)
-    return starting_entropy
 
 def makeBranch(set, dims, tree, parent_node):
     #base cases: out of header OR labels are pure
