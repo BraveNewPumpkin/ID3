@@ -5,6 +5,8 @@ from math import log2
 class NodeData:
     def __init__(self, entropy):
         self.entropy = entropy
+        self.majorityClass = None
+
 
 def makeTree(set, dims, starting_entropy):
     tree = Tree()
@@ -16,6 +18,7 @@ def makeTree(set, dims, starting_entropy):
 def makeBranch(set, dims, tree, parent_node):
     #base cases: out of header OR labels are pure
     if checkIfPure(set, dims) or len(dims) == 1: #is 1 instead of 0 because "Class" will be in there
+        parent_node.majorityClass = #TODO implement
         return True
     status = True
     chosen_dim, info_gain, value_label_counts, value_entropies = chooseDecisionDim(set, dims, parent_node.data.entropy)
@@ -39,6 +42,17 @@ def makeBranch(set, dims, tree, parent_node):
         #RECURSE
         status = status and makeBranch(subset, dims, tree, new_node)
     return status
+
+def calcMajorityClass(set, dims):
+    classifications = defaultdict(lambda: 0)
+    majority_class = None
+    max_instances = -1
+    for classification in set[dims[-1]]:
+        classifications[classification] += 1
+        if classifications[classification] > max_instances:
+            max_instances = classifications[classification]
+            majority_class = classification
+    return majority_class
 
 def checkIfPure(set, dims):
     return len(set[dims[-1]].unique()) < 2
@@ -95,9 +109,3 @@ def getValueLabelCounts(set, header):
 def getLabel(row):
     return row[-1]
 
-
-
-
-#TODO remove
-#for dim in header[0:-1]:
-#    print('info gain for %s: %s' % (dim, calcInfoGain(training_set, dim, previous_entropy)))
