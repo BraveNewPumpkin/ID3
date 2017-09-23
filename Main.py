@@ -37,7 +37,8 @@ def main(argv):
     print('Number of leaf nodes in the tree = %d' % len(tree.leaves()))
     print('Max depth of tree = %d' % tree.depth())
 
-    training_set_accuracy = calcAccuracyForData(training_set, headers, tree)
+    root_node = tree.get_node(tree.root)
+    training_set_accuracy = calcAccuracyForData(training_set, headers, tree, root_node)
 
     print('Accuracy of the model on the training dataset = %.2f%%' % training_set_accuracy)
 
@@ -65,14 +66,13 @@ def calcStartingEntropy(set, dims):
     print('starting entropy of data: %f' % starting_entropy)
     return starting_entropy
 
-def calcAccuracyForData(set, dims, tree):
+def calcAccuracyForData(set, dims, tree, current_node):
     accuracy = 0.0
-    #TODO traverse tree checking accuracy at leaf nodes
-    dim = tree.get_node(tree.root).tag
-    #TODO put into recursive function
+    dim = current_node.tag
+    #traverse tree checking accuracy at leaf nodes
     dim_value_subsets = seperateSetByDimValues(set, dim)
-    pp.pprint(dim_value_subsets)
     #TODO recurse on each child checking if child exists
+
     return accuracy
 
 def seperateSetByDimValues(set, dim):
