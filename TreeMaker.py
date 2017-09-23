@@ -95,7 +95,7 @@ def calcNumInstances(label_counts):
 
 def calcEntropy(label_count, total_instances):
     entropy = 0
-    for label, count in label_count.items():
+    for count in label_count.values():
         entropy += -1 * count / total_instances * log2(count / total_instances)
     return entropy
 
