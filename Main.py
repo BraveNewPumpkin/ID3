@@ -71,15 +71,17 @@ def calcAccuracyForData(set, dims, tree):
     dim = tree.get_node(tree.root).tag
     #TODO put into recursive function
     dim_value_subsets = seperateSetByDimValues(set, dim)
+    pp.pprint(dim_value_subsets)
     #TODO recurse on each child checking if child exists
     return accuracy
 
 def seperateSetByDimValues(set, dim):
     subsets = {}
     #get unique values for dim
-    unique_values = set.drop_duplicates(dim)
+    unique_values = getattr(set, dim).unique()
     for value in unique_values:
-        subsets[value] = set.loc[set[dim] == value]
+        mask = set[dim].values == value
+        subsets[value] = set[mask]
     return subsets
 
 main(sys.argv)
