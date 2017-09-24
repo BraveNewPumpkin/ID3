@@ -38,8 +38,12 @@ def main(argv):
     print('Max depth of tree = %d' % tree.depth())
 
     training_set_accuracy = calcAccuracyForData(training_set, headers, tree)
+    validation_set_accuracy = calcAccuracyForData(validation_set, headers, tree)
+    test_set_accuracy = calcAccuracyForData(test_set, headers, tree)
 
     print('Accuracy of the model on the training dataset = %.2f%%' % training_set_accuracy)
+    print('Accuracy of the model on the validation dataset = %.2f%%' % validation_set_accuracy)
+    print('Accuracy of the model on the test dataset = %.2f%%' % test_set_accuracy)
 
     return 0
 
