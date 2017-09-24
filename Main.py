@@ -73,11 +73,16 @@ def calcAccuracyForData(set, dims, tree):
     return accuracy
 
 def calcNumCorrectlyClassifiedForData(set, dims, tree, current_node):
-    #TODO base cases: leaf node or no node exists for value
-
+    #base cases: leaf node or no node exists for value
+    if current_node is None:
+        #NOTE: this is arbitrary behavior. Specification does not define behavior for nodes that don't have trained instances
+        return 0
+    elif current_node.is_leaf():
+        #loop through set finding
+        mask = set[-1] == current_node.majority_class
+        return set[mask].shape[0]
 
     dim = current_node.tag
-    #traverse tree checking accuracy at leaf nodes
     dim_value_subsets = seperateSetByDimValues(set, dim)
     #TODO recurse on each child checking if child exists
 
