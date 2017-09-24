@@ -3,8 +3,9 @@ from treelib import Node, Tree
 from math import log2
 
 class NodeData:
-    def __init__(self, entropy):
+    def __init__(self, entropy, decision_value=None):
         self.entropy = entropy
+        self.decision_value = decision_value
         self.majority_class = None
     def isMajority(self, classification):
         return classification == self.majority_class
@@ -40,7 +41,11 @@ def makeBranch(set, dims, tree, parent_node):
         value_entropy = value_entropies[value]
         identifier = ''.join([parent_node.identifier, '^', chosen_dim, '=', str(value)])
         print('recursing to node %s with an entropy of %f' % (identifier, value_entropy))
-        new_node = tree.create_node(None, identifier, parent=parent_node.identifier, data=NodeData(entropy=value_entropy))
+        new_node = tree.create_node(None,
+                                    identifier,
+                                    parent=parent_node.identifier,
+                                    data=NodeData(entropy=value_entropy, decision_value=value)
+                                    )
         #RECURSE
         status = status and makeBranch(subset, dims, tree, new_node)
     return status

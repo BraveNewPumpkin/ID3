@@ -79,12 +79,18 @@ def calcNumCorrectlyClassifiedForData(set, dims, tree, current_node):
         return 0
     elif current_node.is_leaf():
         #loop through set finding
-        mask = set[-1] == current_node.majority_class
+        mask = set[dims[-1]] == current_node.majority_class
         return set[mask].shape[0]
 
     dim = current_node.tag
     dim_value_subsets = seperateSetByDimValues(set, dim)
-    #TODO recurse on each child checking if child exists
+    sum_correct = 0
+    current_node_children = tree.children(current_node.identifier)
+    #recurse on each child checking if child exists
+    for value, subset in dim_value_subsets.items():
+        value_node = list(filter(lambda node: node.data.decision_value == value, current_node_children))[0]
+        sum_correct += calcNumCorrectlyClassifiedForData(subset, dims, tree, value_node)
+    return sum_correct
 
 
 def seperateSetByDimValues(set, dim):
