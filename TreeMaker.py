@@ -19,7 +19,7 @@ def makeTree(set, dims, starting_entropy):
 
 
 def makeBranch(set, dims, tree, parent_node):
-    #base cases: out of header OR labels are pure
+    #base cases: out of dimensions OR labels are pure
     if checkIfPure(set, dims) or len(dims) == 1: #is 1 instead of 0 because "Class" will be in there
         parent_node.majority_class = calcMajorityClass(set, dims)
         return True
@@ -27,9 +27,6 @@ def makeBranch(set, dims, tree, parent_node):
     chosen_dim, info_gain, value_label_counts, value_entropies = chooseDecisionDim(set, dims, parent_node.data.entropy)
     #mutate original headers (dimensions) data structure as we will be passing references to children
     dims.remove(chosen_dim)
-    #remove the dimension from the dataset
-    #set.drop(chosen_dim, 1, inplace=True) #1 is for columns axis
-
 
     #set the decision made in tag on parent node
     parent_node.tag = chosen_dim

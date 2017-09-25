@@ -1,0 +1,11 @@
+This project is written in Python
+
+first you will need to install the following librariees and their dependencies. We recommend using pip to do so.
+pandas
+pathlib
+treelib
+
+To run execute Main.py with you favorite python interpreter meeting the 3.6 specification using the following arguments format:
+Main.py /path/to/training/dataset /path/to/validation/dataset /path/to/testing/dataset pruning_factor
+
+:w
