@@ -2,8 +2,9 @@ import TreeMaker as tm
 import pandas as pd
 import sys
 import pprint as pp
+import random
 from pathlib import Path
-from math import log2
+from math import log2, trunc
 
 usage = 'Main.py /path/to/training/dataset /path/to/validation/dataset /path/to/testing/dataset pruning_factor'
 
@@ -20,7 +21,7 @@ def main(argv):
     training_data_path = Path(sys.argv[1])
     validation_data_path = Path(sys.argv[2])
     test_data_path = Path(sys.argv[3])
-    pruning_factor = sys.argv[4]
+    pruning_factor = float(sys.argv[4])
 
     training_set = pd.read_csv(training_data_path)
     validation_set = pd.read_csv(validation_data_path)
@@ -46,7 +47,7 @@ def main(argv):
     print('Accuracy of the model on the test dataset = %.2f%%' % test_set_accuracy)
 
     pruned_tree = pruneTree(tree, pruning_factor)
-    print('pruned %d nodes from tree' % tree.size() - pruned_tree.size())
+    print('pruned %d nodes from tree' % (tree.size() - pruned_tree.size()))
 
     print('Accuracy of the model on the training dataset = %.2f%%' % training_set_accuracy)
     print('Accuracy of the model on the validation dataset = %.2f%%' % validation_set_accuracy)
@@ -113,8 +114,22 @@ def seperateSetByDimValues(set, dim):
         subsets[value] = set[mask]
     return subsets
 
-def pruneTree(tree, pruining_factor):
-    #TODO implement
+def pruneTree(tree, pruning_factor):
+    num_nodes = tree.size()
+    num_nodes_to_prune = trunc(num_nodes * pruning_factor)
+    pruned_nodes = 0
+    secure_random = random.SystemRandom()
+    while pruned_nodes < num_nodes_to_prune:
+        #closure = lambda node: tree.subtree(node.identifier).size() <= (num_nodes_to_prune - pruned_nodes)
+        #sufficiently_small_subtree_root_nodes = list(filter(closure, tree.all_nodes()))
+        sufficiently_small_subtree_root_nodes = []
+        for node in tree.all_nodes():
+            subtree_size = tree.subtree(node.identifier).size()
+            if subtree_size <= (num_nodes_to_prune - pruned_nodes):
+                sufficiently_small_subtree_root_nodes.append(node)
+        chosen_subtree_root_node = secure_random.choice(sufficiently_small_subtree_root_nodes)
+        pruned_nodes += tree.remove_node(chosen_subtree_root_node.identifier)
+
     return tree
 
 main(sys.argv)
