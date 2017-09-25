@@ -46,8 +46,13 @@ def main(argv):
     print('Accuracy of the model on the validation dataset = %.2f%%' % validation_set_accuracy)
     print('Accuracy of the model on the test dataset = %.2f%%' % test_set_accuracy)
 
-    pruned_tree = pruneTree(tree, pruning_factor)
-    print('pruned %d nodes from tree' % (tree.size() - pruned_tree.size()))
+    original_tree_size = tree.size()
+    pruneTree(tree, pruning_factor)
+    print('pruned %d nodes from tree' % (original_tree_size - tree.size()))
+
+    training_set_accuracy = calcAccuracyForData(training_set, headers, tree)
+    validation_set_accuracy = calcAccuracyForData(validation_set, headers, tree)
+    test_set_accuracy = calcAccuracyForData(test_set, headers, tree)
 
     print('Accuracy of the model on the training dataset = %.2f%%' % training_set_accuracy)
     print('Accuracy of the model on the validation dataset = %.2f%%' % validation_set_accuracy)
