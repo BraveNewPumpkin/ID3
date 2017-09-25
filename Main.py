@@ -93,9 +93,17 @@ def calcNumCorrectlyClassifiedForData(set, dims, tree, current_node):
     #base cases: leaf node or no node exists for value
     if current_node is None:
         #NOTE: this is arbitrary behavior. Specification does not define behavior for nodes that don't have trained instances
-        return 0
+        #randomly choose a class to be correct
+        if set.shape[0] > 0:
+            secure_random = random.SystemRandom()
+            unique_classes = getattr(set, dims[-1]).unique()
+            chosen_class = secure_random.choice(unique_classes)
+            mask = set[dims[-1]] == chosen_class
+            num_matching = set[mask].shape[0]
+            return num_matching
+        else:
+            return 0
     elif current_node.is_leaf():
-        #loop through set finding
         mask = set[dims[-1]] == current_node.majority_class
         return set[mask].shape[0]
 
