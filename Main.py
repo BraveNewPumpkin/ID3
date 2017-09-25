@@ -45,6 +45,13 @@ def main(argv):
     print('Accuracy of the model on the validation dataset = %.2f%%' % validation_set_accuracy)
     print('Accuracy of the model on the test dataset = %.2f%%' % test_set_accuracy)
 
+    pruned_tree = pruneTree(tree, pruning_factor)
+    print('pruned %d nodes from tree' % tree.size() - pruned_tree.size())
+
+    print('Accuracy of the model on the training dataset = %.2f%%' % training_set_accuracy)
+    print('Accuracy of the model on the validation dataset = %.2f%%' % validation_set_accuracy)
+    print('Accuracy of the model on the test dataset = %.2f%%' % test_set_accuracy)
+
     return 0
 
 def calcStartingEntropy(set, dims):
@@ -105,6 +112,10 @@ def seperateSetByDimValues(set, dim):
         mask = set[dim].values == value
         subsets[value] = set[mask]
     return subsets
+
+def pruneTree(tree, pruining_factor):
+    #TODO implement
+    return tree
 
 main(sys.argv)
 
