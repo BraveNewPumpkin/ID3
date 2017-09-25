@@ -8,4 +8,3 @@ treelib
 To run execute Main.py with you favorite python interpreter meeting the 3.6 specification using the following arguments format:
 Main.py /path/to/training/dataset /path/to/validation/dataset /path/to/testing/dataset pruning_factor
 
-:w

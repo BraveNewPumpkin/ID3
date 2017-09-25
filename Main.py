@@ -104,7 +104,7 @@ def calcNumCorrectlyClassifiedForData(set, dims, tree, current_node):
         else:
             return 0
     elif current_node.is_leaf():
-        mask = set[dims[-1]] == current_node.majority_class
+        mask = set[dims[-1]] == current_node.data.majority_class
         return set[mask].shape[0]
 
     dim = current_node.tag

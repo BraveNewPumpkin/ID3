@@ -21,7 +21,7 @@ def makeTree(set, dims, starting_entropy):
 def makeBranch(set, dims, tree, parent_node):
     #base cases: out of dimensions OR labels are pure
     if checkIfPure(set, dims) or len(dims) == 1: #is 1 instead of 0 because "Class" will be in there
-        parent_node.majority_class = calcMajorityClass(set, dims)
+        parent_node.data.majority_class = calcMajorityClass(set, dims)
         return True
     status = True
     chosen_dim, info_gain, value_label_counts, value_entropies = chooseDecisionDim(set, dims, parent_node.data.entropy)
