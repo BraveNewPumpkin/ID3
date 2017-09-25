@@ -1,8 +1,8 @@
 import TreeMaker as tm
 import pandas as pd
 import sys
-import pprint as pp
 import random
+from pprint import pprint
 from pathlib import Path
 from math import log2, trunc
 
@@ -105,7 +105,8 @@ def calcNumCorrectlyClassifiedForData(set, dims, tree, current_node):
     current_node_children = tree.children(current_node.identifier)
     #recurse on each child checking if child exists
     for value, subset in dim_value_subsets.items():
-        value_node = list(filter(lambda node: node.data.decision_value == value, current_node_children))[0]
+        value_node_list = list(filter(lambda node: node.data.decision_value == value, current_node_children))
+        value_node = value_node_list[0] if len(value_node_list) > 0 else None
         sum_correct += calcNumCorrectlyClassifiedForData(subset, dims, tree, value_node)
     return sum_correct
 
@@ -125,8 +126,6 @@ def pruneTree(tree, pruning_factor):
     pruned_nodes = 0
     secure_random = random.SystemRandom()
     while pruned_nodes < num_nodes_to_prune:
-        #closure = lambda node: tree.subtree(node.identifier).size() <= (num_nodes_to_prune - pruned_nodes)
-        #sufficiently_small_subtree_root_nodes = list(filter(closure, tree.all_nodes()))
         sufficiently_small_subtree_root_nodes = []
         for node in tree.all_nodes():
             subtree_size = tree.subtree(node.identifier).size()
