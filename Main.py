@@ -38,6 +38,8 @@ def main(argv):
     print('Number of leaf nodes in the tree = %d' % len(tree.leaves()))
     print('Max depth of tree = %d' % tree.depth())
 
+    tm.printTree(tree)
+
     training_set_accuracy = calcAccuracyForData(training_set, headers, tree)
     validation_set_accuracy = calcAccuracyForData(validation_set, headers, tree)
     test_set_accuracy = calcAccuracyForData(test_set, headers, tree)

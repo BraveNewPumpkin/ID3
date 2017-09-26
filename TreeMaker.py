@@ -17,6 +17,20 @@ def makeTree(set, dims, starting_entropy):
     makeBranch(set, dims, tree, root_node)
     return tree
 
+def printTree(tree):
+    root_node = tree.get_node(tree.root)
+    for node in tree.children(tree.root):
+        print(_printTree(tree, 0, node))
+
+def _printTree(tree, current_level, current_node):
+    parent_node = tree.parent(current_node.identifier)
+    string_to_build = '%s%s=%s:' % ('|' * current_level, parent_node.tag, current_node.data.decision_value)
+    if current_node.is_leaf():
+        string_to_build += ' %s' % (current_node.data.majority_class)
+    else:
+        for node in tree.children(current_node.identifier):
+            string_to_build += '\n%s' % (_printTree(tree, current_level + 1, node))
+    return string_to_build
 
 def makeBranch(set, dims, tree, parent_node):
     #base cases: out of dimensions OR labels are pure
