@@ -1,3 +1,4 @@
+import random
 from collections import defaultdict
 from treelib import Node, Tree
 from math import log2
@@ -20,7 +21,7 @@ def makeTree(set, dims, starting_entropy):
 def makeRandomTree(set, dims):
     tree = Tree()
     root_node = tree.create_node('Root', 'root', data=NodeData(1))
-    makeRandomBranch(set, dims, tree, root_node)
+    makeBranch(set, dims, tree, root_node, choose_random=True)
     return tree
 
 def printTree(tree):
@@ -38,15 +39,17 @@ def _printTree(tree, current_level, current_node):
             string_to_build += '\n%s' % (_printTree(tree, current_level + 1, node))
     return string_to_build
 
-def makeBranch(set, dims, tree, parent_node):
+def makeBranch(set, dims, tree, parent_node, choose_random=False):
     #base cases: out of dimensions OR labels are pure
     if checkIfPure(set, dims) or len(dims) == 1: #is 1 instead of 0 because "Class" will be in there
         return True
     status = True
-    chosen_dim, info_gain, value_label_counts, value_entropies = chooseDecisionDim(set, dims, parent_node.data.entropy)
+    if choose_random is False:
+        chosen_dim, value_label_counts, value_entropies = chooseDecisionDim(set, dims, parent_node.data.entropy)
+    else:
+        chosen_dim, value_label_counts, value_entropies = chooseRandomDecisionDim(set, dims)
     #mutate original headers (dimensions) data structure as we will be passing references to children
     dims.remove(chosen_dim)
-
     #set the decision made in tag on parent node
     parent_node.tag = chosen_dim
     #add children
@@ -56,7 +59,7 @@ def makeBranch(set, dims, tree, parent_node):
         subset.drop(subset[subset[chosen_dim] != value].index, inplace=True)
         value_entropy = value_entropies[value]
         identifier = ''.join([parent_node.identifier, '^', chosen_dim, '=', str(value)])
-        print('recursing to node %s with an entropy of %f' % (identifier, value_entropy))
+        #print('recursing to node %s with an entropy of %f' % (identifier, value_entropy))
         new_node = tree.create_node(None,
                                     identifier,
                                     parent=parent_node.identifier,
@@ -96,8 +99,19 @@ def chooseDecisionDim(set, dims, previous_entropy):
             max_info_gain_dim = dim
             max_info_value_label_counts = value_label_counts
             max_info_value_entropies = value_entropies
-    print('max info gain is from dimension: "%s" and is: "%f"' % (max_info_gain_dim, max_info_gain))
-    return max_info_gain_dim, max_info_gain, max_info_value_label_counts, max_info_value_entropies
+    #print('max info gain is from dimension: "%s" and is: "%f"' % (max_info_gain_dim, max_info_gain))
+    return max_info_gain_dim, max_info_value_label_counts, max_info_value_entropies
+
+def chooseRandomDecisionDim(set, dims):
+    secure_random = random.SystemRandom()
+    dim = secure_random.choice(dims[0:-1])
+    value_label_counts = getValueLabelCounts(set, dim)
+    info_gain, value_entropies = calcInfoGain(set, dim, previous_entropy=1, value_label_counts=value_label_counts)
+    max_info_gain = info_gain
+    max_info_gain_dim = dim
+    max_info_value_label_counts = value_label_counts
+    max_info_value_entropies = value_entropies
+    return max_info_gain_dim, max_info_value_label_counts, max_info_value_entropies
 
 def calcInfoGain(set, dims, previous_entropy, value_label_counts):
     dim_entropy = 0

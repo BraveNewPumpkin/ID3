@@ -32,13 +32,17 @@ def main(argv):
     print('Number of training attributes = %d' % len(headers))
     starting_entropy = calcStartingEntropy(training_set, headers)
 
-    tree = tm.makeTree(training_set, headers, starting_entropy)
+    headers_copy = headers.copy()
+    tree = tm.makeTree(training_set, headers_copy, starting_entropy)
 
+    print('-'*80)
     print('Total number of nodes in the tree = %d' % tree.size())
     print('Number of leaf nodes in the tree = %d' % len(tree.leaves()))
+    sum_of_leaf_depths = 0
+    for leaf in tree.leaves():
+        sum_of_leaf_depths += tree.depth(leaf)
+    print('Average depth of tree = %f' % (sum_of_leaf_depths / len(tree.leaves())))
     print('Max depth of tree = %d' % tree.depth())
-
-    tm.printTree(tree)
 
     training_set_accuracy = calcAccuracyForData(training_set, headers, tree)
     validation_set_accuracy = calcAccuracyForData(validation_set, headers, tree)
@@ -47,19 +51,25 @@ def main(argv):
     print('Accuracy of the model on the training dataset = %.2f%%' % training_set_accuracy)
     print('Accuracy of the model on the validation dataset = %.2f%%' % validation_set_accuracy)
     print('Accuracy of the model on the test dataset = %.2f%%' % test_set_accuracy)
+    print('-'*80)
+    headers_copy = headers.copy()
+    random_tree = tm.makeRandomTree(training_set, headers_copy)
 
-    original_tree_size = tree.size()
-    pruneTree(tree, pruning_factor)
-    print('pruned %d nodes from tree' % (original_tree_size - tree.size()))
-    tm.printTree(tree)
+    print('Total number of nodes in the random_tree = %d' % random_tree.size())
+    print('Number of leaf nodes in the random_tree = %d' % len(random_tree.leaves()))
+    sum_of_leaf_depths = 0
+    for leaf in tree.leaves():
+        sum_of_leaf_depths += tree.depth(leaf)
+    print('Average depth of tree = %f' % (sum_of_leaf_depths / len(tree.leaves())))
+    print('Max depth of random_tree = %d' % random_tree.depth())
 
-    training_set_accuracy = calcAccuracyForData(training_set, headers, tree)
-    validation_set_accuracy = calcAccuracyForData(validation_set, headers, tree)
-    test_set_accuracy = calcAccuracyForData(test_set, headers, tree)
+    training_set_accuracy = calcAccuracyForData(training_set, headers, random_tree)
+    validation_set_accuracy = calcAccuracyForData(validation_set, headers, random_tree)
+    test_set_accuracy = calcAccuracyForData(test_set, headers, random_tree)
 
-    print('Accuracy of the model on the training dataset after pruning = %.2f%%' % training_set_accuracy)
-    print('Accuracy of the model on the validation dataset after pruning = %.2f%%' % validation_set_accuracy)
-    print('Accuracy of the model on the test dataset after pruning = %.2f%%' % test_set_accuracy)
+    print('Accuracy of the random model on the training dataset = %.2f%%' % training_set_accuracy)
+    print('Accuracy of the random model on the validation dataset = %.2f%%' % validation_set_accuracy)
+    print('Accuracy of the random model on the test dataset = %.2f%%' % test_set_accuracy)
 
     return 0
 
