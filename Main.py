@@ -51,6 +51,7 @@ def main(argv):
     original_tree_size = tree.size()
     pruneTree(tree, pruning_factor)
     print('pruned %d nodes from tree' % (original_tree_size - tree.size()))
+    tm.printTree(tree)
 
     training_set_accuracy = calcAccuracyForData(training_set, headers, tree)
     validation_set_accuracy = calcAccuracyForData(validation_set, headers, tree)

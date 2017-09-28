@@ -3,10 +3,10 @@ from treelib import Node, Tree
 from math import log2
 
 class NodeData:
-    def __init__(self, entropy, decision_value=None):
+    def __init__(self, entropy, decision_value=None, majority_class=None):
         self.entropy = entropy
         self.decision_value = decision_value
-        self.majority_class = None
+        self.majority_class = majority_class
     def isMajority(self, classification):
         return classification == self.majority_class
 
@@ -15,6 +15,12 @@ def makeTree(set, dims, starting_entropy):
     tree = Tree()
     root_node = tree.create_node('Root', 'root', data=NodeData(starting_entropy))
     makeBranch(set, dims, tree, root_node)
+    return tree
+
+def makeRandomTree(set, dims):
+    tree = Tree()
+    root_node = tree.create_node('Root', 'root', data=NodeData(1))
+    makeRandomBranch(set, dims, tree, root_node)
     return tree
 
 def printTree(tree):
@@ -35,7 +41,6 @@ def _printTree(tree, current_level, current_node):
 def makeBranch(set, dims, tree, parent_node):
     #base cases: out of dimensions OR labels are pure
     if checkIfPure(set, dims) or len(dims) == 1: #is 1 instead of 0 because "Class" will be in there
-        parent_node.data.majority_class = calcMajorityClass(set, dims)
         return True
     status = True
     chosen_dim, info_gain, value_label_counts, value_entropies = chooseDecisionDim(set, dims, parent_node.data.entropy)
@@ -55,7 +60,10 @@ def makeBranch(set, dims, tree, parent_node):
         new_node = tree.create_node(None,
                                     identifier,
                                     parent=parent_node.identifier,
-                                    data=NodeData(entropy=value_entropy, decision_value=value)
+                                    data=NodeData(entropy=value_entropy,
+                                                  decision_value=value,
+                                                  majority_class=calcMajorityClass(subset, dims)
+                                                  )
                                     )
         #RECURSE
         status = status and makeBranch(subset, dims, tree, new_node)
